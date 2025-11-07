@@ -13,6 +13,16 @@ DB_NAME = "salesdb"
 def get_conn():
     return mysql.connector.connect(database=DB_NAME, **base_config)
 
+#전체 매출 목록 조회
+def get_sales():
+    conn = get_conn()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM sales_tbl")
+    rows = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return rows
+
 def insert_sale(saledate, name, quantity, price):
     conn = get_conn()
     cursor = conn.cursor()

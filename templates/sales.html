@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    매출 목록
+{% endblock %}
+
+{% block content %}
+{% if sales %}
+<h2>매출 목록</h2>
+<table>
+    <thead>
+        <tr>
+            <th>판매일자</th>
+            <th>품목명</th>
+            <th>수량</th>
+            <th>단가</th>
+            <th>총액</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for sale in sales %}
+        <tr>
+            <td>{{ sale[0] }}</td>
+            <td>{{ sale[1] }}</td>
+            <td>{{ sale[2] }}</td>
+            <td>{{ sale[3] }}</td>
+            <td>{{ sale[4] }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>매출 목록이 없습니다.</p>
+{% endif %}
+{% endblock %}
