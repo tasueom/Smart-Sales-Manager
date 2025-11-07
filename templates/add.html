@@ -12,8 +12,15 @@
         <input type="date" id="saledate" name="saledate" value="{{ (now or '')[:10] if now else '' }}" required>
     </div>
     <div>
-        <label for="name">상품명:</label>
-        <input type="text" id="name" name="name" required>
+        <label for="name">품목명:</label>
+        <select id="name" name="name" required>
+            <option value="" disabled selected hidden>품목명</option>
+            <option value="노트북">노트북</option>
+            <option value="마우스">마우스</option>
+            <option value="키보드">키보드</option>
+            <option value="모니터">모니터</option>
+            <option value="프린터">프린터</option>
+        </select>
     </div>
     <div>
         <label for="quantity">수량:</label>
