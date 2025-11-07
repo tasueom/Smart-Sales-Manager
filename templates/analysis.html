@@ -6,21 +6,24 @@
 
 {% block content %}
 <h2>매출 분석</h2>
-<form action="{{ url_for('analysis') }}" method="get">
-    <div>
-        <select name="year_month">
-            {% for year, month in year_month_list %}
-            {% set value = year ~ '-' ~ ('%02d' % month) %}
-            <option value="{{ value }}" {% if value == selected_year_month %}selected{% endif %}>{{ year }}년 {{ month }}월</option>
-            {% endfor %}
-        </select>
-    </div>
-    <div>
-        <button type="submit">조회</button>
-    </div>
-</form>
 <div>
-    <canvas id="byDateChart"></canvas>
+    <h3>월별 매출 현황</h3>
+    <form action="{{ url_for('analysis') }}" method="get">
+        <div>
+            <select name="year_month">
+                {% for year, month in year_month_list %}
+                {% set value = year ~ '-' ~ ('%02d' % month) %}
+                <option value="{{ value }}" {% if value == selected_year_month %}selected{% endif %}>{{ year }}년 {{ month }}월</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <button type="submit">조회</button>
+        </div>
+    </form>
+    <div>
+        <canvas id="byDateChart"></canvas>
+    </div>
 </div>
 
 <script>
