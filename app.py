@@ -1,7 +1,10 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, flash
+import pandas as pd
 import db
 
 app = Flask(__name__)
+
+app.secret_key = 'secret_key1234'
 
 @app.route('/')
 def index():
@@ -29,6 +32,29 @@ def add():
     
     # GET 요청 처리
     return render_template('add.html')
+
+@app.route('/upload_csv', methods=['POST'])
+def upload_csv():
+    """CSV 파일 업로드"""
+    file = request.files['file']
+    df = pd.read_csv(file, encoding='utf-8-sig')
+    
+    required_columns = ['sale_date', 'item_name', 'quantity', 'unit_price']
+    if list(df.columns) != required_columns:
+        flash('CSV 파일 형식이 올바르지 않습니다.')
+        return redirect(url_for('add'))
+    
+    df = df.dropna(axis=0).reset_index(drop=True)
+    for index, row in df.iterrows():
+        saledate = row['sale_date']
+        name = row['item_name']
+        quantity = row['quantity']
+        price = row['unit_price']
+        total = quantity * price
+        db.insert_sale(saledate, name, quantity, price, total)
+    
+    flash('CSV 파일이 성공적으로 업로드되었습니다.')
+    return redirect(url_for('sales'))
 
 @app.route('/edit/<int:id>', methods=['GET', 'POST'])
 def edit(id):
