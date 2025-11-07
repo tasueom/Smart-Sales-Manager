@@ -12,3 +12,14 @@ DB_NAME = "salesdb"
 # 커넥션과 커서 반환하는 함수
 def get_conn():
     return mysql.connector.connect(database=DB_NAME, **base_config)
+
+def insert_sale(saledate, name, quantity, price):
+    conn = get_conn()
+    cursor = conn.cursor()
+    cursor.execute("""INSERT INTO sales
+                    (sale_date, item_name, quantity, unit_price)
+                    VALUES (%s, %s, %s, %s)""",
+                    (saledate, name, quantity, price))
+    conn.commit()
+    cursor.close()
+    conn.close()
