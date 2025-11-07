@@ -17,7 +17,7 @@ def get_conn():
 def get_sales():
     conn = get_conn()
     cursor = conn.cursor()
-    cursor.execute("SELECT sale_date, item_name, quantity, unit_price, total FROM sales_tbl")
+    cursor.execute("SELECT sale_id, sale_date, item_name, quantity, unit_price, total FROM sales_tbl")
     rows = cursor.fetchall()
     cursor.close()
     conn.close()
@@ -30,6 +30,14 @@ def insert_sale(saledate, name, quantity, price, total):
                     (sale_date, item_name, quantity, unit_price, total)
                     VALUES (%s, %s, %s, %s, %s)""",
                     (saledate, name, quantity, price, total))
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+def delete_sale(id):
+    conn = get_conn()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM sales_tbl WHERE sale_id = %s", (id,))
     conn.commit()
     cursor.close()
     conn.close()

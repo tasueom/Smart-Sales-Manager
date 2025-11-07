@@ -15,16 +15,20 @@
             <th>수량</th>
             <th>단가</th>
             <th>총액</th>
+            <th>관리</th>
         </tr>
     </thead>
     <tbody>
         {% for sale in sales %}
         <tr>
-            <td>{{ sale[0] }}</td>
             <td>{{ sale[1] }}</td>
             <td>{{ sale[2] }}</td>
             <td>{{ sale[3] }}</td>
             <td>{{ sale[4] }}</td>
+            <td>{{ sale[5] }}</td>
+            <td>
+                <a href="{{ url_for('delete', id=sale[0]) }}" onclick="return confirm('삭제하시겠습니까?')">삭제</a>
+            </td>
         </tr>
         {% endfor %}
     </tbody>

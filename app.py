@@ -30,5 +30,11 @@ def add():
     # GET 요청 처리
     return render_template('add.html')
 
+@app.route('/delete/<int:id>')
+def delete(id):
+    """매출 정보 삭제"""
+    db.delete_sale(id)
+    return redirect(url_for('sales'))
+
 if __name__ == '__main__':
     app.run(debug=True)
