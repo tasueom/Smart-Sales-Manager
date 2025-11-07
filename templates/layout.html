@@ -21,4 +21,10 @@
         {% block content %}{% endblock %}
     </main>
 </body>
+{% if get_flashed_messages() %}
+<script>
+    alert('{{ get_flashed_messages()[0] }}');
+</script>
+{% endif %}
+</body>
 </html>
