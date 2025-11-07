@@ -16,7 +16,7 @@ def get_conn():
 def insert_sale(saledate, name, quantity, price):
     conn = get_conn()
     cursor = conn.cursor()
-    cursor.execute("""INSERT INTO sales
+    cursor.execute("""INSERT INTO sales_tbl
                     (sale_date, item_name, quantity, unit_price)
                     VALUES (%s, %s, %s, %s)""",
                     (saledate, name, quantity, price))
