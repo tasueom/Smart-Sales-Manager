@@ -13,8 +13,15 @@ def index():
 @app.route('/sales')
 def sales():
     """매출 목록 조회"""
-    sales = db.get_sales()
-    return render_template('sales.html', sales=sales)
+    per_page = 20
+    total_count = db.get_sales_count()
+    total_pages = (total_count + per_page - 1) // per_page if total_count else 1
+
+    page = request.args.get('page', 1, type=int)
+    page = max(1, min(page, total_pages))
+
+    sales = db.get_sales(page, per_page)
+    return render_template('sales.html', sales=sales, page=page, total_pages=total_pages)
 
 @app.route('/add', methods=['GET', 'POST'])
 def add():

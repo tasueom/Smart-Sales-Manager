@@ -13,11 +13,26 @@ DB_NAME = "salesdb"
 def get_conn():
     return mysql.connector.connect(database=DB_NAME, **base_config)
 
-#전체 매출 목록 조회
-def get_sales():
+# 매출 목록 총 개수 조회
+def get_sales_count():
     conn = get_conn()
     cursor = conn.cursor()
-    cursor.execute("SELECT sale_id, sale_date, item_name, quantity, unit_price, total FROM sales_tbl order by sale_date desc")
+    cursor.execute("SELECT COUNT(*) FROM sales_tbl")
+    count = cursor.fetchone()[0]
+    cursor.close()
+    conn.close()
+    return count
+
+#전체 매출 목록 조회
+def get_sales(page=1, per_page=20):
+    offset = (page - 1) * per_page
+    conn = get_conn()
+    cursor = conn.cursor()
+    cursor.execute(
+        "SELECT sale_id, sale_date, item_name, quantity, unit_price, total "
+        "FROM sales_tbl ORDER BY sale_date DESC "
+        "LIMIT %s OFFSET %s", (per_page, offset)
+    )
     rows = cursor.fetchall()
     cursor.close()
     conn.close()

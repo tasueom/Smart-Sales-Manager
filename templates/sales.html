@@ -34,6 +34,23 @@
         {% endfor %}
     </tbody>
 </table>
+<div class="pagination">
+    {% if page > 1 %}
+    <a href="{{ url_for('sales', page=page-1) }}">이전</a>
+    {% endif %}
+
+    {% for p in range(1, total_pages + 1) %}
+        {% if p == page %}
+            <strong>{{ p }}</strong>
+        {% else %}
+            <a href="{{ url_for('sales', page=p) }}">{{ p }}</a>
+        {% endif %}
+    {% endfor %}
+
+    {% if page < total_pages %}
+    <a href="{{ url_for('sales', page=page+1) }}">다음</a>
+    {% endif %}
+</div>
 {% else %}
 <p>매출 목록이 없습니다.</p>
 {% endif %}
