@@ -25,7 +25,7 @@ def add():
         
         db.insert_sale(saledate, name, quantity, price, total)
         
-        return redirect(url_for('index'))
+        return redirect(url_for('sales'))
     
     # GET 요청 처리
     return render_template('add.html')
