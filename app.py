@@ -83,5 +83,11 @@ def delete(id):
     db.delete_sale(id)
     return redirect(url_for('sales'))
 
+@app.route('/analysis')
+def analysis():
+    """매출 분석"""
+    sales = db.get_sales()
+    return render_template('analysis.html', sales=sales)
+
 if __name__ == '__main__':
     app.run(debug=True)
