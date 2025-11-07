@@ -23,13 +23,13 @@ def get_sales():
     conn.close()
     return rows
 
-def insert_sale(saledate, name, quantity, price):
+def insert_sale(saledate, name, quantity, price, total):
     conn = get_conn()
     cursor = conn.cursor()
     cursor.execute("""INSERT INTO sales_tbl
-                    (sale_date, item_name, quantity, unit_price)
-                    VALUES (%s, %s, %s, %s)""",
-                    (saledate, name, quantity, price))
+                    (sale_date, item_name, quantity, unit_price, total)
+                    VALUES (%s, %s, %s, %s, %s)""",
+                    (saledate, name, quantity, price, total))
     conn.commit()
     cursor.close()
     conn.close()

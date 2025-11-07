@@ -19,10 +19,11 @@ def add():
     if request.method == 'POST':
         saledate = request.form['saledate']
         name = request.form['name']
-        quantity = request.form['quantity']
-        price = request.form['price']
+        quantity = int(request.form['quantity'])
+        price = int(request.form['price'])
+        total = quantity * price
         
-        db.insert_sale(saledate, name, quantity, price)
+        db.insert_sale(saledate, name, quantity, price, total)
         
         return redirect(url_for('index'))
     
