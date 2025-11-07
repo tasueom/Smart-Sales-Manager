@@ -17,7 +17,7 @@ def get_conn():
 def get_sales():
     conn = get_conn()
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM sales_tbl")
+    cursor.execute("SELECT sale_date, item_name, quantity, unit_price, total FROM sales_tbl")
     rows = cursor.fetchall()
     cursor.close()
     conn.close()
