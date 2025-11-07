@@ -83,11 +83,45 @@ def delete(id):
     db.delete_sale(id)
     return redirect(url_for('sales'))
 
-@app.route('/analysis')
+@app.route('/analysis', methods=['GET', 'POST'])
 def analysis():
     """매출 분석"""
-    sales = db.get_sales()
-    return render_template('analysis.html', sales=sales)
+    year_month_list = db.get_year_month_list()
+
+    default_year_month = None
+    if year_month_list:
+        default_year_month = f"{year_month_list[0][0]}-{year_month_list[0][1]:02d}"
+
+    year_month = request.values.get('year_month') or default_year_month
+
+    sales = []
+    if year_month:
+        try:
+            year, month = year_month.split('-')
+            sales = db.get_sales_by_year_month(year, month)
+        except ValueError:
+            year_month = default_year_month
+            if year_month:
+                year, month = year_month.split('-')
+                sales = db.get_sales_by_year_month(year, month)
+    
+    df = pd.DataFrame(sales, columns=['sale_date', 'item_name', 'quantity', 'unit_price', 'total'])
+
+    if df.empty:
+        data_by_date = {"label": [], "data": []}
+    else:
+        grouped = df.groupby('item_name')['total'].sum().reset_index()
+        data_by_date = {
+            "label": grouped['item_name'].tolist(),
+            "data": grouped['total'].tolist(),
+        }
+
+    return render_template(
+        'analysis.html',
+        year_month_list=year_month_list,
+        selected_year_month=year_month,
+        data_by_date=data_by_date,
+    )
 
 if __name__ == '__main__':
     app.run(debug=True)

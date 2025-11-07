@@ -5,4 +5,59 @@
 {% endblock %}
 
 {% block content %}
+<h2>매출 분석</h2>
+<form action="{{ url_for('analysis') }}" method="get">
+    <div>
+        <select name="year_month">
+            {% for year, month in year_month_list %}
+            {% set value = year ~ '-' ~ ('%02d' % month) %}
+            <option value="{{ value }}" {% if value == selected_year_month %}selected{% endif %}>{{ year }}년 {{ month }}월</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div>
+        <button type="submit">조회</button>
+    </div>
+</form>
+<div>
+    <canvas id="byDateChart"></canvas>
+</div>
+
+<script>
+    const DataByDate = {{ data_by_date | tojson }};
+    const ctx = document.getElementById('byDateChart');
+    const chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: DataByDate.label,
+            datasets: [{
+                label: '총액',
+                data: DataByDate.data,
+            }],
+        },
+        options: {
+            locale: 'ko-KR',
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return value.toLocaleString('ko-KR') + '원';
+                        }
+                    }
+                }
+            },
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const value = context.parsed.y || 0;
+                            return `${context.dataset.label}: ${value.toLocaleString('ko-KR')}원`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+</script>
 {% endblock %}

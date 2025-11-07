@@ -84,3 +84,22 @@ def delete_sale(id):
     conn.commit()
     cursor.close()
     conn.close()
+
+# 연도+월의 목록을 반환하는 함수
+def get_year_month_list():
+    conn = get_conn()
+    cursor = conn.cursor()
+    cursor.execute("SELECT DISTINCT YEAR(sale_date), MONTH(sale_date) FROM sales_tbl ORDER BY YEAR(sale_date) DESC, MONTH(sale_date) DESC")
+    rows = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return rows
+
+def get_sales_by_year_month(year, month):
+    conn = get_conn()
+    cursor = conn.cursor()
+    cursor.execute("SELECT sale_date, item_name, quantity, unit_price, total FROM sales_tbl WHERE YEAR(sale_date) = %s AND MONTH(sale_date) = %s ORDER BY sale_date DESC", (year, month))
+    rows = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return rows
