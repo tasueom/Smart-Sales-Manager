@@ -30,6 +30,20 @@ def add():
     # GET 요청 처리
     return render_template('add.html')
 
+@app.route('/edit/<int:id>', methods=['GET', 'POST'])
+def edit(id):
+    """매출 정보 수정"""
+    if request.method == 'POST':
+        saledate = request.form['saledate']
+        name = request.form['name']
+        quantity = int(request.form['quantity'])
+        price = int(request.form['price'])
+        total = quantity * price
+        db.update_sale(id, saledate, name, quantity, price, total)
+        return redirect(url_for('sales'))
+    sale = db.get_sale(id)
+    return render_template('edit.html', sale=sale)
+
 @app.route('/delete/<int:id>')
 def delete(id):
     """매출 정보 삭제"""

@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    매출 정보 수정
+{% endblock %}
+
+{% block content %}
+<h2>매출 정보 수정</h2>
+<form action="{{ url_for('edit', id=sale[0]) }}" method="post">
+    <div>
+        <label for="saledate">판매일자:</label>
+        <input type="date" id="saledate" name="saledate" value="{{ sale[1] }}" required>
+    </div>
+    <div>
+        <label for="name">품목명:</label>
+        <select id="name" name="name" required>
+            <option value="" disabled hidden {% if not sale[2] %}selected{% endif %}>품목명</option>
+            <option value="노트북" {% if sale[2] == "노트북" %}selected{% endif %}>노트북</option>
+            <option value="마우스" {% if sale[2] == "마우스" %}selected{% endif %}>마우스</option>
+            <option value="키보드" {% if sale[2] == "키보드" %}selected{% endif %}>키보드</option>
+            <option value="모니터" {% if sale[2] == "모니터" %}selected{% endif %}>모니터</option>
+            <option value="프린터" {% if sale[2] == "프린터" %}selected{% endif %}>프린터</option>
+        </select>
+    </div>
+    <div>
+        <label for="quantity">수량:</label>
+        <input type="number" id="quantity" name="quantity" min="1" value="{{ sale[3] }}" required>
+    </div>
+    <div>
+        <label for="price">단가:</label>
+        <input type="number" id="price" name="price" min="0" value="{{ sale[4] }}" required>
+    </div>
+    <div>
+        <button type="submit">수정</button>
+    </div>
+</form>
+{% endblock %}
