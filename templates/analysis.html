@@ -7,15 +7,15 @@
 {% block content %}
 <h2>매출 분석</h2>
 <ul class="analysis-tabs">
-    {% if top_items %}
-    <li><button type="button" class="toggle-btn" data-target="top-items-section">매출 상위 품목 Top 3</button></li>
-    {% endif %}
     <li><button type="button" class="toggle-btn" data-target="monthly-section">월별 매출 현황</button></li>
     <li><button type="button" class="toggle-btn" data-target="item-section">품목별 매출 현황</button></li>
     <li><button type="button" class="toggle-btn" data-target="pie-section">품목별 매출 비중</button></li>
+    {% if top_items %}
+    <li><button type="button" class="toggle-btn" data-target="top-items-section">매출 상위 품목 Top 3</button></li>
+    {% endif %}
 </ul>
 {% if top_items %}
-<div id="top-items-section" class="analysis-section">
+<div id="top-items-section" class="analysis-section hidden">
     <h3>매출 상위 품목 Top 3</h3>
     <table border="1" cellpadding="6" cellspacing="0">
         <thead>
@@ -41,7 +41,7 @@
     </table>
 </div>
 {% endif %}
-<div id="monthly-section" class="analysis-section hidden">
+<div id="monthly-section" class="analysis-section">
     <h3>월별 매출 현황</h3>
     <form action="{{ url_for('analysis') }}" method="get">
         <div>
@@ -268,8 +268,8 @@
         button.addEventListener('click', () => showSection(targetId));
     });
 
-    const defaultSectionId = availableSectionIds.includes('top-items-section')
-        ? 'top-items-section'
+    const defaultSectionId = availableSectionIds.includes('monthly-section')
+        ? 'monthly-section'
         : availableSectionIds[0];
 
     if (defaultSectionId) {
