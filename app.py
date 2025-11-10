@@ -107,12 +107,25 @@ def analysis():
     
     df = pd.DataFrame(sales, columns=['sale_date', 'item_name', 'quantity', 'unit_price', 'total'])
 
+    item_summary = db.get_item_summary()
+    data_by_item = {"labels": [], "quantities": [], "totals": []}
+    for name, quantity, total in item_summary:
+        data_by_item["labels"].append(name)
+        data_by_item["quantities"].append(int(quantity))
+        data_by_item["totals"].append(int(total))
+
     if df.empty:
         data_by_date = {"label": [], "data": []}
     else:
-        grouped = df.groupby('item_name')['total'].sum().reset_index()
+        df['sale_date'] = pd.to_datetime(df['sale_date']).dt.strftime('%Y-%m-%d')
+        grouped = (
+            df.groupby('sale_date')['total']
+            .sum()
+            .reset_index()
+            .sort_values('sale_date')
+        )
         data_by_date = {
-            "label": grouped['item_name'].tolist(),
+            "label": grouped['sale_date'].tolist(),
             "data": grouped['total'].tolist(),
         }
 
@@ -121,6 +134,7 @@ def analysis():
         year_month_list=year_month_list,
         selected_year_month=year_month,
         data_by_date=data_by_date,
+        data_by_item=data_by_item,
     )
 
 if __name__ == '__main__':

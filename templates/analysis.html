@@ -25,17 +25,28 @@
         <canvas id="byDateChart"></canvas>
     </div>
 </div>
+<div>
+    <h3>품목별 매출 현황</h3>
+    <div>
+        <canvas id="byItemChart"></canvas>
+    </div>
+</div>
 
 <script>
     const DataByDate = {{ data_by_date | tojson }};
-    const ctx = document.getElementById('byDateChart');
-    const chart = new Chart(ctx, {
+    const DataByItem = {{ data_by_item | tojson }};
+
+    const byDateCtx = document.getElementById('byDateChart');
+    const byItemCtx = document.getElementById('byItemChart');
+
+    new Chart(byDateCtx, {
         type: 'bar',
         data: {
             labels: DataByDate.label,
             datasets: [{
                 label: '총액',
                 data: DataByDate.data,
+                backgroundColor: '#4e79a7',
             }],
         },
         options: {
@@ -56,6 +67,72 @@
                         label: function(context) {
                             const value = context.parsed.y || 0;
                             return `${context.dataset.label}: ${value.toLocaleString('ko-KR')}원`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    new Chart(byItemCtx, {
+        data: {
+            labels: DataByItem.labels,
+            datasets: [
+                {
+                    type: 'bar',
+                    label: '총액',
+                    data: DataByItem.totals,
+                    backgroundColor: '#59a14f',
+                    yAxisID: 'y',
+                    order: 1,
+                },
+                {
+                    type: 'line',
+                    label: '판매수량',
+                    data: DataByItem.quantities,
+                    borderColor: '#e15759',
+                    backgroundColor: 'rgba(225, 87, 89, 0.2)',
+                    tension: 0.2,
+                    fill: false,
+                    yAxisID: 'y1',
+                    order: 0,
+                }
+            ],
+        },
+        options: {
+            locale: 'ko-KR',
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    position: 'left',
+                    ticks: {
+                        callback: function(value) {
+                            return value.toLocaleString('ko-KR') + '원';
+                        }
+                    }
+                },
+                y1: {
+                    beginAtZero: true,
+                    position: 'right',
+                    grid: {
+                        drawOnChartArea: false,
+                    },
+                    ticks: {
+                        callback: function(value) {
+                            return `${value.toLocaleString('ko-KR')}개`;
+                        }
+                    }
+                }
+            },
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const value = context.parsed.y || 0;
+                            if (context.dataset.yAxisID === 'y') {
+                                return `${context.dataset.label}: ${value.toLocaleString('ko-KR')}원`;
+                            }
+                            return `${context.dataset.label}: ${value.toLocaleString('ko-KR')}개`;
                         }
                     }
                 }

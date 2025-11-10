@@ -103,3 +103,15 @@ def get_sales_by_year_month(year, month):
     cursor.close()
     conn.close()
     return rows
+
+def get_item_summary():
+    conn = get_conn()
+    cursor = conn.cursor()
+    cursor.execute(
+        "SELECT item_name, SUM(quantity) AS total_quantity, SUM(total) AS total_amount "
+        "FROM sales_tbl GROUP BY item_name ORDER BY item_name"
+    )
+    rows = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return rows
