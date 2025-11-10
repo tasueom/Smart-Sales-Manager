@@ -6,8 +6,19 @@
 
 {% block content %}
 <h2>매출 분석</h2>
+<form class="analysis-filter" action="{{ url_for('analysis') }}" method="get">
+    <label for="year_month">조회 월</label>
+    <select id="year_month" name="year_month">
+        {% for year, month in year_month_list %}
+        {% set value = year ~ '-' ~ ('%02d' % month) %}
+        <option value="{{ value }}" {% if value == selected_year_month %}selected{% endif %}>{{ year }}년 {{ month }}월</option>
+        {% endfor %}
+    </select>
+    <input type="hidden" name="section" id="current_section" value="{{ active_section or 'monthly-section' }}">
+    <button type="submit">조회</button>
+</form>
 <ul class="analysis-tabs">
-    <li><button type="button" class="toggle-btn" data-target="monthly-section">월별 매출 현황</button></li>
+    <li><button type="button" class="toggle-btn" data-target="monthly-section">일자별 매출 현황</button></li>
     <li><button type="button" class="toggle-btn" data-target="item-section">품목별 매출 현황</button></li>
     <li><button type="button" class="toggle-btn" data-target="pie-section">품목별 매출 비중</button></li>
     {% if top_items %}
@@ -42,20 +53,7 @@
 </div>
 {% endif %}
 <div id="monthly-section" class="analysis-section">
-    <h3>월별 매출 현황</h3>
-    <form action="{{ url_for('analysis') }}" method="get">
-        <div>
-            <select name="year_month">
-                {% for year, month in year_month_list %}
-                {% set value = year ~ '-' ~ ('%02d' % month) %}
-                <option value="{{ value }}" {% if value == selected_year_month %}selected{% endif %}>{{ year }}년 {{ month }}월</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div>
-            <button type="submit">조회</button>
-        </div>
-    </form>
+    <h3>일자별 매출 현황</h3>
     <div class="chart-wrapper">
         <canvas id="byDateChart"></canvas>
     </div>
@@ -227,6 +225,8 @@
         }
     });
 
+    const filterForm = document.querySelector('.analysis-filter');
+    const sectionInput = document.getElementById('current_section');
     const sections = document.querySelectorAll('.analysis-section');
     const buttons = document.querySelectorAll('.toggle-btn');
     const chartsBySection = {
@@ -257,6 +257,10 @@
                 }
             });
         }
+
+        if (sectionInput) {
+            sectionInput.value = targetId;
+        }
     }
 
     buttons.forEach(button => {
@@ -272,8 +276,12 @@
         ? 'monthly-section'
         : availableSectionIds[0];
 
-    if (defaultSectionId) {
-        showSection(defaultSectionId);
+    const initialSectionId = sectionInput && sectionInput.value && availableSectionIds.includes(sectionInput.value)
+        ? sectionInput.value
+        : defaultSectionId;
+
+    if (initialSectionId) {
+        showSection(initialSectionId);
     }
 </script>
 {% endblock %}

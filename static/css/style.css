@@ -93,6 +93,18 @@ select {
     border: 1px solid #cbd5f5;
 }
 
+.analysis-filter {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 16px 0 24px;
+}
+
+.analysis-filter label {
+    font-weight: 600;
+    color: #2d3748;
+}
+
 .analysis-tabs {
     list-style: none;
     padding: 0;

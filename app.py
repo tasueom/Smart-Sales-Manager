@@ -122,6 +122,8 @@ def analysis():
 
     year_month = request.values.get('year_month') or default_year_month
 
+    active_section = request.values.get('section')
+
     sales = []
     if year_month:
         try:
@@ -135,25 +137,10 @@ def analysis():
     
     df = pd.DataFrame(sales, columns=['sale_date', 'item_name', 'quantity', 'unit_price', 'total'])
 
-    item_summary = db.get_item_summary()
-    item_summary = sorted(item_summary, key=lambda row: row[2], reverse=True)
-    data_by_item = {"labels": [], "quantities": [], "totals": []}
-    top_items = []
-    for name, quantity, total in item_summary:
-        data_by_item["labels"].append(name)
-        data_by_item["quantities"].append(int(quantity))
-        data_by_item["totals"].append(int(total))
-        if len(top_items) < 3:
-            avg_amount = (total / quantity) if quantity else 0
-            top_items.append({
-                "name": name,
-                "total": int(total),
-                "quantity": int(quantity),
-                "average": int(avg_amount)
-            })
-
     if df.empty:
         data_by_date = {"label": [], "data": []}
+        data_by_item = {"labels": [], "totals": [], "quantities": []}
+        top_items = []
     else:
         df['sale_date'] = pd.to_datetime(df['sale_date']).dt.strftime('%Y-%m-%d')
         grouped = (
@@ -167,6 +154,26 @@ def analysis():
             "data": grouped['total'].tolist(),
         }
 
+        item_grouped = (
+            df.groupby('item_name')
+            .agg(total_sum=('total', 'sum'), quantity_sum=('quantity', 'sum'))
+            .reset_index()
+            .sort_values('total_sum', ascending=False)
+        )
+        data_by_item = {
+            "labels": item_grouped['item_name'].tolist(),
+            "totals": item_grouped['total_sum'].tolist(),
+            "quantities": item_grouped['quantity_sum'].tolist(),
+        }
+
+        top_slice = item_grouped.head(3)
+        top_items = [{
+            "name": row['item_name'],
+            "total": int(row['total_sum']),
+            "quantity": int(row['quantity_sum']),
+            "average": int(row['total_sum'] / row['quantity_sum']) if row['quantity_sum'] else 0
+        } for _, row in top_slice.iterrows()]
+
     return render_template(
         'analysis.html',
         year_month_list=year_month_list,
@@ -174,6 +181,7 @@ def analysis():
         data_by_date=data_by_date,
         data_by_item=data_by_item,
         top_items=top_items,
+        active_section=active_section,
     )
 
 if __name__ == '__main__':
