@@ -6,34 +6,6 @@
 
 {% block content %}
 <h2>매출 분석</h2>
-<style>
-    .analysis-tabs {
-        list-style: none;
-        padding: 0;
-        margin: 0 0 16px;
-        display: flex;
-        gap: 8px;
-    }
-    .analysis-tabs li {
-        margin: 0;
-    }
-    .analysis-tabs button {
-        padding: 8px 12px;
-        border: 1px solid #ccc;
-        background: #f7f7f7;
-        cursor: pointer;
-    }
-    .analysis-tabs button.active {
-        font-weight: 700;
-        background: #e2e8f0;
-    }
-    .analysis-section {
-        margin-bottom: 32px;
-    }
-    .analysis-section.hidden {
-        display: none;
-    }
-</style>
 <ul class="analysis-tabs">
     {% if top_items %}
     <li><button type="button" class="toggle-btn" data-target="top-items-section">매출 상위 품목 Top 3</button></li>
@@ -84,26 +56,26 @@
             <button type="submit">조회</button>
         </div>
     </form>
-    <div>
+    <div class="chart-wrapper">
         <canvas id="byDateChart"></canvas>
     </div>
 </div>
 <div id="item-section" class="analysis-section hidden">
     <h3>품목별 매출 현황</h3>
-    <div>
+    <div class="chart-wrapper">
         <canvas id="byItemChart"></canvas>
     </div>
 </div>
 <div id="pie-section" class="analysis-section hidden">
     <h3>품목별 매출 비중</h3>
-    <div>
+    <div class="chart-wrapper">
         <canvas id="byItemPieChart"></canvas>
     </div>
 </div>
 
 <script>
-    const DataByDate = {{ data_by_date | tojson }};
-    const DataByItem = {{ data_by_item | tojson }};
+    const DataByDate = JSON.parse('{{ data_by_date | tojson | safe }}');
+    const DataByItem = JSON.parse('{{ data_by_item | tojson | safe }}');
 
     const byDateCtx = document.getElementById('byDateChart');
     const byItemCtx = document.getElementById('byItemChart');
