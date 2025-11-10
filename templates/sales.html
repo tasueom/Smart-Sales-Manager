@@ -7,6 +7,9 @@
 {% block content %}
 {% if sales %}
 <h2>매출 목록</h2>
+<form method="get" action="{{ url_for('export')}}">
+    <button type="submit">EXCEL 다운로드</button>
+</form>
 <table>
     <thead>
         <tr>

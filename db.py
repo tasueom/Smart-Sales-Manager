@@ -104,6 +104,18 @@ def get_sales_by_year_month(year, month):
     conn.close()
     return rows
 
+def get_all_sales_without_id():
+    conn = get_conn()
+    cursor = conn.cursor()
+    cursor.execute(
+        "SELECT sale_date, item_name, quantity, unit_price, total "
+        "FROM sales_tbl ORDER BY sale_date DESC"
+    )
+    rows = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return rows
+
 def get_item_summary():
     conn = get_conn()
     cursor = conn.cursor()

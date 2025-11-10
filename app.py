@@ -1,5 +1,7 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, send_file
 import pandas as pd
+from io import BytesIO
+from datetime import datetime
 import db
 
 app = Flask(__name__)
@@ -82,6 +84,32 @@ def delete(id):
     """매출 정보 삭제"""
     db.delete_sale(id)
     return redirect(url_for('sales'))
+
+@app.route('/export')
+def export():
+    """EXCEL 다운로드"""
+    sales = db.get_all_sales_without_id()
+    if not sales:
+        flash('내보낼 데이터가 없습니다.')
+        return redirect(url_for('sales'))
+
+    df = pd.DataFrame(
+        sales,
+        columns=['판매일자', '품목명', '수량', '단가', '총액']
+    )
+
+    buffer = BytesIO()
+    with pd.ExcelWriter(buffer, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False, sheet_name='매출')
+    buffer.seek(0)
+
+    filename = f"sales_{datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx"
+    return send_file(
+        buffer,
+        as_attachment=True,
+        download_name=filename,
+        mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
 
 @app.route('/analysis', methods=['GET', 'POST'])
 def analysis():
