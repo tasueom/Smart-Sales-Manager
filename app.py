@@ -110,10 +110,19 @@ def analysis():
     item_summary = db.get_item_summary()
     item_summary = sorted(item_summary, key=lambda row: row[2], reverse=True)
     data_by_item = {"labels": [], "quantities": [], "totals": []}
+    top_items = []
     for name, quantity, total in item_summary:
         data_by_item["labels"].append(name)
         data_by_item["quantities"].append(int(quantity))
         data_by_item["totals"].append(int(total))
+        if len(top_items) < 3:
+            avg_amount = (total / quantity) if quantity else 0
+            top_items.append({
+                "name": name,
+                "total": int(total),
+                "quantity": int(quantity),
+                "average": int(avg_amount)
+            })
 
     if df.empty:
         data_by_date = {"label": [], "data": []}
@@ -136,6 +145,7 @@ def analysis():
         selected_year_month=year_month,
         data_by_date=data_by_date,
         data_by_item=data_by_item,
+        top_items=top_items,
     )
 
 if __name__ == '__main__':

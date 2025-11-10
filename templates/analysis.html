@@ -6,6 +6,33 @@
 
 {% block content %}
 <h2>매출 분석</h2>
+{% if top_items %}
+<div>
+    <h3>매출 상위 품목 Top 3</h3>
+    <table border="1" cellpadding="6" cellspacing="0">
+        <thead>
+            <tr>
+                <th>순위</th>
+                <th>품목명</th>
+                <th>총매출</th>
+                <th>평균</th>
+                <th>판매 수량</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in top_items %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ item.name }}</td>
+                <td>{{ "{:,}".format(item.total) }}원</td>
+                <td>{{ "{:,}".format(item.average) }}원</td>
+                <td>{{ "{:,}".format(item.quantity) }}개</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
 <div>
     <h3>월별 매출 현황</h3>
     <form action="{{ url_for('analysis') }}" method="get">
