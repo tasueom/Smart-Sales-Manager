@@ -17,17 +17,19 @@
     <input type="hidden" name="section" id="current_section" value="{{ active_section or 'monthly-section' }}">
     <button type="submit">조회</button>
 </form>
+{% set has_data = (data_by_date.label | length > 0) or (data_by_item.labels | length > 0) or (top_items | length > 0) %}
 <ul class="analysis-tabs">
     <li><button type="button" class="toggle-btn" data-target="monthly-section">일자별 매출 현황</button></li>
     <li><button type="button" class="toggle-btn" data-target="item-section">품목별 매출 현황</button></li>
     <li><button type="button" class="toggle-btn" data-target="pie-section">품목별 매출 비중</button></li>
-    {% if top_items %}
     <li><button type="button" class="toggle-btn" data-target="top-items-section">매출 상위 품목 Top 3</button></li>
-    {% endif %}
 </ul>
-{% if top_items %}
+{% if not has_data %}
+<p class="analysis-empty">등록된 매출 정보가 없습니다.</p>
+{% else %}
 <div id="top-items-section" class="analysis-section hidden">
     <h3>매출 상위 품목 Top 3</h3>
+    {% if top_items | length > 0 %}
     <table border="1" cellpadding="6" cellspacing="0">
         <thead>
             <tr>
@@ -50,8 +52,10 @@
             {% endfor %}
         </tbody>
     </table>
+    {% else %}
+    <p class="analysis-empty">선택한 기간에 매출 상위 품목 정보가 없습니다.</p>
+    {% endif %}
 </div>
-{% endif %}
 <div id="monthly-section" class="analysis-section">
     <h3>일자별 매출 현황</h3>
     <div class="chart-wrapper">
@@ -70,6 +74,7 @@
         <canvas id="byItemPieChart"></canvas>
     </div>
 </div>
+{% endif %}
 
 <script>
     const DataByDate = JSON.parse('{{ data_by_date | tojson | safe }}');
