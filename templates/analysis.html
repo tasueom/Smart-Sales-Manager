@@ -6,8 +6,44 @@
 
 {% block content %}
 <h2>매출 분석</h2>
+<style>
+    .analysis-tabs {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 16px;
+        display: flex;
+        gap: 8px;
+    }
+    .analysis-tabs li {
+        margin: 0;
+    }
+    .analysis-tabs button {
+        padding: 8px 12px;
+        border: 1px solid #ccc;
+        background: #f7f7f7;
+        cursor: pointer;
+    }
+    .analysis-tabs button.active {
+        font-weight: 700;
+        background: #e2e8f0;
+    }
+    .analysis-section {
+        margin-bottom: 32px;
+    }
+    .analysis-section.hidden {
+        display: none;
+    }
+</style>
+<ul class="analysis-tabs">
+    {% if top_items %}
+    <li><button type="button" class="toggle-btn" data-target="top-items-section">매출 상위 품목 Top 3</button></li>
+    {% endif %}
+    <li><button type="button" class="toggle-btn" data-target="monthly-section">월별 매출 현황</button></li>
+    <li><button type="button" class="toggle-btn" data-target="item-section">품목별 매출 현황</button></li>
+    <li><button type="button" class="toggle-btn" data-target="pie-section">품목별 매출 비중</button></li>
+</ul>
 {% if top_items %}
-<div>
+<div id="top-items-section" class="analysis-section">
     <h3>매출 상위 품목 Top 3</h3>
     <table border="1" cellpadding="6" cellspacing="0">
         <thead>
@@ -33,7 +69,7 @@
     </table>
 </div>
 {% endif %}
-<div>
+<div id="monthly-section" class="analysis-section hidden">
     <h3>월별 매출 현황</h3>
     <form action="{{ url_for('analysis') }}" method="get">
         <div>
@@ -52,13 +88,13 @@
         <canvas id="byDateChart"></canvas>
     </div>
 </div>
-<div>
+<div id="item-section" class="analysis-section hidden">
     <h3>품목별 매출 현황</h3>
     <div>
         <canvas id="byItemChart"></canvas>
     </div>
 </div>
-<div>
+<div id="pie-section" class="analysis-section hidden">
     <h3>품목별 매출 비중</h3>
     <div>
         <canvas id="byItemPieChart"></canvas>
@@ -73,7 +109,7 @@
     const byItemCtx = document.getElementById('byItemChart');
     const byItemPieCtx = document.getElementById('byItemPieChart');
 
-    new Chart(byDateCtx, {
+    const byDateChart = new Chart(byDateCtx, {
         type: 'bar',
         data: {
             labels: DataByDate.label,
@@ -108,7 +144,7 @@
         }
     });
 
-    new Chart(byItemCtx, {
+    const byItemChart = new Chart(byItemCtx, {
         data: {
             labels: DataByItem.labels,
             datasets: [
@@ -187,7 +223,7 @@
         '#bab0ab'
     ];
 
-    new Chart(byItemPieCtx, {
+    const byItemPieChart = new Chart(byItemPieCtx, {
         type: 'pie',
         data: {
             labels: DataByItem.labels,
@@ -215,5 +251,54 @@
             }
         }
     });
+
+    const sections = document.querySelectorAll('.analysis-section');
+    const buttons = document.querySelectorAll('.toggle-btn');
+    const chartsBySection = {
+        'monthly-section': [byDateChart],
+        'item-section': [byItemChart],
+        'pie-section': [byItemPieChart],
+    };
+
+    const availableSectionIds = Array.from(sections).map(section => section.id);
+
+    function showSection(targetId) {
+        sections.forEach(section => {
+            if (section.id === targetId) {
+                section.classList.remove('hidden');
+            } else {
+                section.classList.add('hidden');
+            }
+        });
+
+        buttons.forEach(button => {
+            button.classList.toggle('active', button.dataset.target === targetId);
+        });
+
+        if (chartsBySection[targetId]) {
+            chartsBySection[targetId].forEach(chart => {
+                if (chart) {
+                    chart.resize();
+                }
+            });
+        }
+    }
+
+    buttons.forEach(button => {
+        const targetId = button.dataset.target;
+        if (!availableSectionIds.includes(targetId)) {
+            button.disabled = true;
+            return;
+        }
+        button.addEventListener('click', () => showSection(targetId));
+    });
+
+    const defaultSectionId = availableSectionIds.includes('top-items-section')
+        ? 'top-items-section'
+        : availableSectionIds[0];
+
+    if (defaultSectionId) {
+        showSection(defaultSectionId);
+    }
 </script>
 {% endblock %}
