@@ -31,6 +31,12 @@
         <canvas id="byItemChart"></canvas>
     </div>
 </div>
+<div>
+    <h3>품목별 매출 비중</h3>
+    <div>
+        <canvas id="byItemPieChart"></canvas>
+    </div>
+</div>
 
 <script>
     const DataByDate = {{ data_by_date | tojson }};
@@ -38,6 +44,7 @@
 
     const byDateCtx = document.getElementById('byDateChart');
     const byItemCtx = document.getElementById('byItemChart');
+    const byItemPieCtx = document.getElementById('byItemPieChart');
 
     new Chart(byDateCtx, {
         type: 'bar',
@@ -135,6 +142,48 @@
                             return `${context.dataset.label}: ${value.toLocaleString('ko-KR')}개`;
                         }
                     }
+                }
+            }
+        }
+    });
+
+    const pieColors = [
+        '#4e79a7',
+        '#f28e2b',
+        '#e15759',
+        '#76b7b2',
+        '#59a14f',
+        '#edc948',
+        '#b07aa1',
+        '#ff9da7',
+        '#9c755f',
+        '#bab0ab'
+    ];
+
+    new Chart(byItemPieCtx, {
+        type: 'pie',
+        data: {
+            labels: DataByItem.labels,
+            datasets: [{
+                label: '총액 비중',
+                data: DataByItem.totals,
+                backgroundColor: pieColors,
+            }]
+        },
+        options: {
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const value = context.parsed || 0;
+                            const total = context.chart.data.datasets[0].data.reduce((acc, cur) => acc + cur, 0);
+                            const percentage = total ? (value / total * 100).toFixed(1) : 0;
+                            return `${context.label}: ${value.toLocaleString('ko-KR')}원 (${percentage}%)`;
+                        }
+                    }
+                },
+                legend: {
+                    position: 'bottom',
                 }
             }
         }

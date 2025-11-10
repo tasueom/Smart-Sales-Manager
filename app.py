@@ -108,6 +108,7 @@ def analysis():
     df = pd.DataFrame(sales, columns=['sale_date', 'item_name', 'quantity', 'unit_price', 'total'])
 
     item_summary = db.get_item_summary()
+    item_summary = sorted(item_summary, key=lambda row: row[2], reverse=True)
     data_by_item = {"labels": [], "quantities": [], "totals": []}
     for name, quantity, total in item_summary:
         data_by_item["labels"].append(name)
